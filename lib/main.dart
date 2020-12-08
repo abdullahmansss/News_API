@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/modules/business/business_screen.dart';
 
-void main() {
+void main()
+{
   runApp(MyApp());
 }
 
@@ -38,15 +40,17 @@ class AuthorModel
   String name;
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget
+{
   @override
   Widget build(BuildContext context)
   {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: Container(),
+      home: BusinessScreen(),
     );
   }
 }
