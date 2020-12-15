@@ -8,62 +8,77 @@ import 'package:flutter_app/modules/counter/counter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class BusinessScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => BusinessCubit()..getBusiness('business'),
-      child: BlocConsumer<BusinessCubit, BusinessStates>(
-        listener: (context, state) {
-          if (state is BusinessErrorState) {
-            Fluttertoast.showToast(
-              msg: state.error,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-          }
-        },
-        builder: (context, state) {
-          var list = BusinessCubit.get(context).articles;
+class BusinessScreen extends StatelessWidget
+{
+  String category;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                'Business',
-              ),
-            ),
-            body: ConditionalBuilder(
-              condition: state is! BusinessLoadingState,
-              builder: (ctx) => ListView.separated(
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (ctx, index) => buildItem(list[index], context),
-                separatorBuilder: (ctx, index) => Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.grey[300],
+  BusinessScreen(this.category);
+
+  @override
+  Widget build(BuildContext context)
+  {
+    return Builder(
+      builder: (BuildContext context)
+      {
+        switch(this.category)
+        {
+          case 'business':
+            BusinessCubit.get(context).getBusiness();
+            break;
+          case 'sports':
+            BusinessCubit.get(context).getSports();
+            break;
+        }
+
+        return BlocConsumer<BusinessCubit, BusinessStates>(
+          listener: (context, state) {
+            if (state is BusinessErrorState) {
+              Fluttertoast.showToast(
+                msg: state.error,
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIosWeb: 1,
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 16.0,
+              );
+            }
+          },
+          builder: (context, state)
+          {
+            var list;
+
+            switch(this.category)
+            {
+              case 'business':
+                list = BusinessCubit.get(context).articles;
+                break;
+              case 'sports':
+                list = BusinessCubit.get(context).sports;
+                break;
+            }
+
+            return Scaffold(
+              body: ConditionalBuilder(
+                condition: state is! BusinessLoadingState,
+                builder: (ctx) => ListView.separated(
+                  physics: BouncingScrollPhysics(),
+                  itemBuilder: (ctx, index) => buildItem(list[index], context),
+                  separatorBuilder: (ctx, index) => Container(
+                    width: double.infinity,
+                    height: 1.0,
+                    color: Colors.grey[300],
+                  ),
+                  itemCount: list.length,
                 ),
-                itemCount: list.length,
+                fallback: (ctx) => Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-              fallback: (ctx) => Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: ()
-              {
-                BusinessCubit.get(context).getBusiness('sports');
-              },
-              child: Icon(
-                Icons.list,
-              ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

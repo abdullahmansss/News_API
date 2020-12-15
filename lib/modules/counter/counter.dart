@@ -26,9 +26,6 @@ class CounterScreen extends StatelessWidget
       builder: (context, state)
       {
         return Scaffold(
-          appBar: AppBar(
-            title: Text('BLoC'),
-          ),
           body: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
